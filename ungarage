@@ -24,10 +24,10 @@ def handle_commands():
             open("irc/irc.freenode.net/#lqdn-stalk/in", "w").write("bah\n")
 
 
-def freenode():
+def join_irc(folder="irc", server="irc.freenode.net", port=6667, nick=NICK, full_name=NICK):
     while True:
         try:
-            bot = ii(i="irc", s="irc.freenode.net", p=6667, n="DeuxGarage", f="DeuxGarage", _bg=True)
+            bot = ii(i=folder, s=server, p=port, n=nick, f=full_name, _bg=True)
             sleep(5)
             for chan in open("CHANS", "r"):
                 print "Va joindre %s" % chan.strip()
@@ -41,7 +41,7 @@ def freenode():
             print e
 
 parser = argh.ArghParser()
-parser.add_commands([freenode, handle_commands])
+parser.add_commands([join_irc, handle_commands])
 
 if __name__ == '__main__':
     parser.dispatch()
