@@ -14,6 +14,25 @@ SERVER = "irc.freenode.net"
 FOLDER = "irc"
 PORT = 6667
 
+
+class Chan(object):
+    def __init__(self, path):
+        self.path = path
+        self.name = path.split("/")[-1]
+
+    def write(self, string):
+        if not string.endswith("\n"):
+            string += "\n"
+
+        with open(os.path.join(self.path, "in"), "w") as chan:
+            print [string]
+            chan.write(string)
+
+    def read_path(self):
+        assert os.path.exists(os.path.join(self.path, "out"))
+        print os.path.join(self.path, "out")
+        return os.path.join(self.path, "out")
+
 def debug(line):
     print "DEBUG:", line
 
@@ -29,10 +48,12 @@ def parse_irc(path, nick, n):
     except KeyboardInterrupt:
         return
 
+
 def handle_commands(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0):
-    for datetime, nick, sentence in parse_irc(path=os.path.join(folder, server, chan, "out"), nick=NICK, n=n):
+    chan = Chan(os.path.join(folder, server, chan))
+    for datetime, nick, sentence in parse_irc(path=chan.read_path(), nick=NICK, n=n):
         if sentence.startswith("!bouh"):
-            open("irc/irc.freenode.net/#lqdn-stalk/in", "w").write("bah\n")
+            chan.write("bah")
 
 
 def join_irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK):
