@@ -26,7 +26,6 @@ class Chan(object):
             string += "\n"
 
         with open(os.path.join(self.path, "in"), "w") as chan:
-            print [string]
             chan.write(string)
 
     def read_path(self):
