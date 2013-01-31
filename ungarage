@@ -7,6 +7,8 @@ import argh
 
 from sh import ii, sleep, tail
 
+NICK = "DeuxGarage"
+
 def debug(line):
     print "DEBUG:", line
 
@@ -15,7 +17,11 @@ def handle_commands():
     for line in tail("-f", "irc/irc.freenode.net/#lqdn-stalk/out", n=1, _iter=True):
         date, time, nick, sentence = line.split(" ", 3)
         nick = nick[1:-1]
-        print date, time, nick, sentence
+        if nick == NICK:  # I don't want to read myself
+            continue
+
+        if sentence.startswith("!bouh"):
+            open("irc/irc.freenode.net/#lqdn-stalk/in", "w").write("bah\n")
 
 
 def freenode():
