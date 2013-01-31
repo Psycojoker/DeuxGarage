@@ -55,25 +55,24 @@ def handle_commands(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER,
 
 
 def join_irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK, chans_file="CHANS", single_chan=None):
-    while True:
-        try:
-            bot = ii(i=folder, s=server, p=port, n=nick, f=full_name, _bg=True)
-            sleep(5)
-            if single_chan is None:
-                for chan in open(chans_file, "r"):
-                    print "Va joindre %s" % chan.strip()
-                    open("irc/irc.freenode.net/in", "w").write("/j %s\n" % chan.strip())
-            else:
-                print "Va joindre %s" % single_chan.strip()
-                open("irc/irc.freenode.net/in", "w").write("/j %s\n" % single_chan.strip())
+    try:
+        bot = ii(i=folder, s=server, p=port, n=nick, f=full_name, _bg=True)
+        sleep(5)
+        if single_chan is None:
+            for chan in open(chans_file, "r"):
+                print "Va joindre %s" % chan.strip()
+                open("irc/irc.freenode.net/in", "w").write("/j %s\n" % chan.strip())
+        else:
+            print "Va joindre %s" % single_chan.strip()
+            open("irc/irc.freenode.net/in", "w").write("/j %s\n" % single_chan.strip())
 
-            bot.wait()
-        except KeyboardInterrupt:
-            print "end"
-            return
-        except Exception as e:
-            traceback.print_exc(file=sys.stdout)
-            print e
+        bot.wait()
+    except KeyboardInterrupt:
+        print "end"
+        return
+    except Exception as e:
+        traceback.print_exc(file=sys.stdout)
+        print e
 
 parser = argh.ArghParser()
 parser.add_commands([join_irc, handle_commands])
