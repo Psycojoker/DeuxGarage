@@ -8,6 +8,9 @@ import argh
 from sh import ii, sleep, tail
 
 NICK = "DeuxGarage"
+SERVER = "irc.freenode.net"
+FOLDER = "irc"
+PORT = 6667
 
 def debug(line):
     print "DEBUG:", line
@@ -24,7 +27,7 @@ def handle_commands():
             open("irc/irc.freenode.net/#lqdn-stalk/in", "w").write("bah\n")
 
 
-def join_irc(folder="irc", server="irc.freenode.net", port=6667, nick=NICK, full_name=NICK):
+def join_irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK):
     while True:
         try:
             bot = ii(i=folder, s=server, p=port, n=nick, f=full_name, _bg=True)
