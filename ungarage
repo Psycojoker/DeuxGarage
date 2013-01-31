@@ -35,6 +35,10 @@ class Chan(object):
         return os.path.join(self.path, "out")
 
 
+def remove_command(sentence, command):
+    return sentence.lstrip()[len(command):].lstrip()
+
+
 def parse_irc(path, nick, n):
     try:
         for line in tail("-f", path, n=n, _iter=True):
@@ -59,7 +63,7 @@ def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0):
     chan = Chan(os.path.join(folder, server, chan))
     for datetime, nick, sentence in parse_irc(path=chan.read_path(), nick=NICK, n=n):
         if sentence.startswith("!len"):
-            chan.write(len(sentence[len("!len"):].strip()))
+            chan.write(len(remove_command(sentence, "!len").strip()))
 
 
 def join_irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK, chans_file="CHANS", single_chan=None):
