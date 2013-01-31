@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import os
 import sys
 import traceback
 import argh
 
 from sh import ii, sleep, tail
+from dateutil.parser import parse
 
 NICK = "DeuxGarage"
 SERVER = "irc.freenode.net"
@@ -15,14 +17,20 @@ PORT = 6667
 def debug(line):
     print "DEBUG:", line
 
+def parse_irc(path, nick, n):
+    try:
+        for line in tail("-f", path, n=n, _iter=True):
+            date, time, nick, sentence = line.split(" ", 3)
+            nick = nick[1:-1]
+            if nick == NICK:  # I don't want to read myself
+                continue
 
-def handle_commands():
-    for line in tail("-f", "irc/irc.freenode.net/#lqdn-stalk/out", n=1, _iter=True):
-        date, time, nick, sentence = line.split(" ", 3)
-        nick = nick[1:-1]
-        if nick == NICK:  # I don't want to read myself
-            continue
+            yield parse(date + " " + time), nick, sentence
+    except KeyboardInterrupt:
+        return
 
+def handle_commands(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0):
+    for datetime, nick, sentence in parse_irc(path=os.path.join(folder, server, chan, "out"), nick=NICK, n=n):
         if sentence.startswith("!bouh"):
             open("irc/irc.freenode.net/#lqdn-stalk/in", "w").write("bah\n")
 
