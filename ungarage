@@ -55,6 +55,13 @@ def handle_commands(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER,
             chan.write("bah")
 
 
+def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0):
+    chan = Chan(os.path.join(folder, server, chan))
+    for datetime, nick, sentence in parse_irc(path=chan.read_path(), nick=NICK, n=n):
+        if sentence.startswith("!len"):
+            chan.write(len(sentence[len("!len"):].strip()))
+
+
 def join_irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK, chans_file="CHANS", single_chan=None):
     try:
         bot = ii(i=folder, s=server, p=port, n=nick, f=full_name, _bg=True)
@@ -75,8 +82,10 @@ def join_irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK,
         traceback.print_exc(file=sys.stdout)
         print e
 
+
 parser = argh.ArghParser()
-parser.add_commands([join_irc, handle_commands])
+parser.add_commands([join_irc, handle_commands, twitter])
+
 
 if __name__ == '__main__':
     parser.dispatch()
