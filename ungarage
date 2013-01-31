@@ -5,10 +5,18 @@ import sys
 import traceback
 import argh
 
-from sh import ii, sleep
+from sh import ii, sleep, tail
 
 def debug(line):
     print "DEBUG:", line
+
+
+def handle_commands():
+    for line in tail("-f", "irc/irc.freenode.net/#lqdn-stalk/out", n=1, _iter=True):
+        date, time, nick, sentence = line.split(" ", 3)
+        nick = nick[1:-1]
+        print date, time, nick, sentence
+
 
 def freenode():
     while True:
@@ -27,7 +35,7 @@ def freenode():
             print e
 
 parser = argh.ArghParser()
-parser.add_commands([freenode])
+parser.add_commands([freenode, handle_commands])
 
 if __name__ == '__main__':
     parser.dispatch()
