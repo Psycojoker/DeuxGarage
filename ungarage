@@ -33,8 +33,6 @@ class Chan(object):
         print os.path.join(self.path, "out")
         return os.path.join(self.path, "out")
 
-def debug(line):
-    print "DEBUG:", line
 
 def parse_irc(path, nick, n):
     try:
