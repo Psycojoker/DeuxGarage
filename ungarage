@@ -64,6 +64,20 @@ def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0):
         if sentence.startswith("!len"):
             chan.write(len(remove_command(sentence, "!len").strip()))
 
+        if sentence.startswith("!twitter"):
+            tweet = remove_command(sentence, "!twitter")
+            if len(tweet.strip()) > 140:
+                chan.write("Tweet is too long! (%s)" % len(tweet.strip()))
+
+            # pbs/sh don't managed to make bti accept input from a pipe correctly :(
+            if not os.path.exists("debug"):
+                os.makedirs("debug")
+            return_code = os.system('echo "%s" | bti --account="zoubiboulba" --password="hophophop" --action="update" --host="identica" --debug > debug/tweet-%s.log 2>&1' % (tweet, datetime.now().strftime("%F-%T")))
+            if return_code == 0:
+                chan.write("Grand succès!")
+            else:
+                chan.write("Error :( (more infos in the logs)")
+
 
 def join_irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK, chans_file="CHANS", single_chan=None):
     try:
