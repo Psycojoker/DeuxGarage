@@ -58,27 +58,37 @@ def handle_commands(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER,
             chan.write("bah")
 
 
-def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0):
+def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0, account="", password="", host=""):
     chan = Chan(os.path.join(folder, server, chan))
     for datetime, nick, sentence in parse_irc(path=chan.read_path(), nick=NICK, n=n):
-        if sentence.startswith("!len"):
-            chan.write(len(remove_command(sentence, "!len").strip()))
+        try:
+            if sentence.startswith("!len"):
+                chan.write(len(remove_command(sentence, "!len").strip()))
 
-        if sentence.startswith("!twitter"):
-            tweet = remove_command(sentence, "!twitter")
-            if len(tweet.strip()) > 140:
-                chan.write("Tweet is too long! (%s)" % len(tweet.strip()))
-                continue
+            if sentence.startswith("!twitter"):
+                tweet = remove_command(sentence, "!twitter")
+                if len(tweet.strip()) > 140:
+                    chan.write("Tweet is too long! (%s)" % len(tweet.strip()))
+                    continue
 
-            # pbs/sh don't managed to make bti accept input from a pipe correctly :(
+                # pbs/sh don't managed to make bti accept input from a pipe correctly :(
+                if not os.path.exists("debug"):
+                    os.makedirs("debug")
+                debug_log_name = "tweet-%s.log" % datetime.now().strftime("%F-%T")
+                return_code = os.system('echo "%s" | bti --account="zoubiboulba" --password="hophophop" --action="update" --host="identica" --debug > debug/ 2>&1' % (tweet, debug_log_name))
+                if return_code == 0:
+                    chan.write("Grand succès!")
+                else:
+                    chan.write("Error :( (more infos in the logs: %s)" % debug_log_name)
+
+        except Exception as e:
+            debug_log_name = "error-%s.log" % datetime.now().strftime("%F-%T")
             if not os.path.exists("debug"):
                 os.makedirs("debug")
-            debug_log_name = "tweet-%s.log" % datetime.now().strftime("%F-%T")
-            return_code = os.system('echo "%s" | bti --account="zoubiboulba" --password="hophophop" --action="update" --host="identica" --debug > debug/ 2>&1' % (tweet, debug_log_name))
-            if return_code == 0:
-                chan.write("Grand succès!")
-            else:
-                chan.write("Error :( (more infos in the logs: %s)" % debug_log_name)
+            with open(os.path.join("debug", debug_log_name), "w") as debug_file:
+                traceback.print_exc(file=debug_file)
+                debug_file.write("%s\n" % e)
+                chan.write("Zomg, error! (check logfile %s)" % debug_log_name)
 
 
 def join_irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK, chans_file="CHANS", single_chan=None):
