@@ -59,6 +59,8 @@ def handle_commands(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER,
 
 
 def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0, account="", password="", host=""):
+    if not os.path.exists("debug"):
+        os.makedirs("debug")
     chan = Chan(os.path.join(folder, server, chan))
     for datetime, nick, sentence in parse_irc(path=chan.read_path(), nick=NICK, n=n):
         try:
@@ -72,8 +74,6 @@ def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0, ac
                     continue
 
                 # pbs/sh don't managed to make bti accept input from a pipe correctly :(
-                if not os.path.exists("debug"):
-                    os.makedirs("debug")
                 debug_log_name = "tweet-%s.log" % datetime.now().strftime("%F-%T")
                 return_code = os.system('echo "%s" | bti --account="zoubiboulba" --password="hophophop" --action="update" --host="identica" --debug > debug/ 2>&1' % (tweet, debug_log_name))
                 if return_code == 0:
@@ -83,8 +83,6 @@ def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0, ac
 
         except Exception as e:
             debug_log_name = "error-%s.log" % datetime.now().strftime("%F-%T")
-            if not os.path.exists("debug"):
-                os.makedirs("debug")
             with open(os.path.join("debug", debug_log_name), "w") as debug_file:
                 traceback.print_exc(file=debug_file)
                 debug_file.write("%s\n" % e)
