@@ -68,6 +68,7 @@ def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0):
             tweet = remove_command(sentence, "!twitter")
             if len(tweet.strip()) > 140:
                 chan.write("Tweet is too long! (%s)" % len(tweet.strip()))
+                continue
 
             # pbs/sh don't managed to make bti accept input from a pipe correctly :(
             if not os.path.exists("debug"):
