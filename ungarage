@@ -6,8 +6,13 @@ import sys
 import traceback
 import argh
 
-from sh import ii, sleep, tail
+from sh import ii, sleep, tail, bti
 from dateutil.parser import parse
+
+try:
+    from config import login, password
+except ImportError:
+    print "WARNING: config.py doesn't exist, I won't be able to talk to twitter"
 
 NICK = "DeuxGarage"
 SERVER = "irc.freenode.net"
@@ -75,12 +80,34 @@ def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0, ac
 
                 # pbs/sh don't managed to make bti accept input from a pipe correctly :(
                 debug_log_name = "tweet-%s.log" % datetime.now().strftime("%F-%T")
-                return_code = os.system('echo "%s" | bti --account="zoubiboulba" --password="hophophop" --action="update" --host="identica" --debug > debug/ 2>&1' % (tweet, debug_log_name))
+                return_code = os.system('echo "%s" | bti --account="%s" --password="%s" --action="update" --host="identica" --debug > debug/%s 2>&1' % (tweet, login, password, debug_log_name))
                 if return_code == 0:
                     chan.write("Grand succès!")
                 else:
                     chan.write("Error :( (more infos in the logs: %s)" % debug_log_name)
 
+            if sentence.startswith("!rt"):
+                tweet_id = remove_command(sentence, "!rt").strip()
+
+                if not tweet_id.isdigit():
+                    from ipdb import set_trace; set_trace()
+                    chan.write("Error: I need a tweet id only composed of numbers")
+                    continue
+
+                debug_log_name = "tweet-%s.log" % datetime.now().strftime("%F-%T")
+                bti(account=login,
+                    password=password,
+                    action="update",
+                    host="identica",
+                    debug=True,
+                    retweet=tweet_id,
+                    _out=os.path.join("debug", debug_log_name),
+                    _err=os.path.join("debug", debug_log_name))
+                chan.write("Grand succès!")
+
+        except KeyboardInterrupt:
+            print "end"
+            sys.exit(0)
         except Exception as e:
             debug_log_name = "error-%s.log" % datetime.now().strftime("%F-%T")
             with open(os.path.join("debug", debug_log_name), "w") as debug_file:
