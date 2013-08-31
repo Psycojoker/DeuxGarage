@@ -125,7 +125,7 @@ def irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK, *cha
             open("irc/irc.freenode.net/in", "w").write("/j %s\n" % chan.strip())
         bot.wait()
     except KeyboardInterrupt:
-        print "end"
+        print "Received ^C, end"
         return
     except Exception as e:
         traceback.print_exc(file=sys.stdout)
