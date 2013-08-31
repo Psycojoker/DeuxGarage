@@ -119,6 +119,7 @@ def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0, ac
 def irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK, chans_file="CHANS", single_chan=None):
     if not os.path.exists(chans_file):
         print "Create a CHANS file and put the list of chans in it"
+        return
     try:
         bot = ii(i=folder, s=server, p=port, n=nick, f=full_name, _bg=True)
         sleep(5)
