@@ -6,7 +6,7 @@ import sys
 import traceback
 import argh
 
-from sh import ii, sleep, tail, bti
+from sh import ii, sleep, tail, bti, feedstail
 from dateutil.parser import parse
 
 try:
@@ -115,6 +115,14 @@ def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0, ac
                 debug_file.write("%s\n" % e)
                 chan.write("Zomg, error! (check logfile %s)" % debug_log_name)
 
+def rss(url, chan, folder=FOLDER, server=SERVER):
+    chan = Chan(os.path.join(folder, server, chan))
+    try:
+        for line in feedstail(u=url, n=0, i=120, f="{title} - {link}", K=True, r=True, e=True, k="title", _iter=True):
+            chan.write(line)
+    except KeyboardInterrupt:
+        print "Received ^C, end"
+        return
 
 def irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK, *chans):
     try:
@@ -133,7 +141,7 @@ def irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK, *cha
 
 
 parser = argh.ArghParser()
-parser.add_commands([irc, handle_commands, twitter])
+parser.add_commands([irc, handle_commands, twitter, rss])
 
 
 if __name__ == '__main__':
