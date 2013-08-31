@@ -125,6 +125,9 @@ def rss(url, chan, folder=FOLDER, server=SERVER):
         return
 
 def irc(folder=FOLDER, server=SERVER, port=PORT, nick=NICK, full_name=NICK, *chans):
+    if not chans:
+        print "Error: give a list of chans as args"
+        return
     try:
         bot = ii(i=folder, s=server, p=port, n=nick, f=full_name, _bg=True)
         sleep(5)
