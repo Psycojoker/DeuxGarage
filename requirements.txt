@@ -1,3 +1,4 @@
 argh
 sh
 python-dateutil
+feedstail
