@@ -118,7 +118,7 @@ def twitter(nick=NICK, chan="#lqdn-stalk", folder=FOLDER, server=SERVER, n=0, ac
 def rss(url, chan, folder=FOLDER, server=SERVER):
     chan = Chan(os.path.join(folder, server, chan))
     try:
-        for line in feedstail(u=url, n=0, i=120, f="{title} - {link}", K=True, r=True, e=True, k="title", _iter=True):
+        for line in feedstail(u=url, n=0, i=120, f="{title} - {link}", K=True, r=True, e=True, _iter=True):
             chan.write(line)
     except KeyboardInterrupt:
         print "Received ^C, end"
